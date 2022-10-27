@@ -61,6 +61,7 @@ class SnakeGameAI:
         self._place_food()
         
         self.frame_iteration = 0
+        self.no_food = 0
 
     # place the food in a random position on the display window
     def _place_food(self):
@@ -73,36 +74,42 @@ class SnakeGameAI:
 
     def play_step(self, action):
         self.frame_iteration += 1
-        # 1. Move the snake based on generated action
+        self.no_food += 1
+        # Move the snake based on generated action
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 quit()
 
-        # 2. Move the snake
+        # Move the snake
         self.move(action)
         self.snake.insert(0, self.head)
 
-        # 3. Check if the game is over
+        # Check if the game is over
         reward = 0
         game_over = False
-        if self.is_collision() or self.frame_iteration > 100 * len(self.snake):
+        if self.is_collision() or self.frame_iteration > 50 * len(self.snake) or self.no_food > 200:
             game_over = True
             reward = -10
-            return reward, game_over, score
+            return reward, game_over, self.score
 
-        # 4. Place the new food
+        # Place the new food
         if self.head == self.food:
+            self.no_food = 0
             self.score += 1
-            reward = 10
+            if self.no_food < 100:
+                reward = 10
+            else:
+                reward = 5
+            
             self._place_food()
         else:
             self.snake.pop()
-        # 5. Update the ui and the clock
+        # Update the ui and the clock
         self._update_ui()
         self.clock.tick(SPEED)
 
-        # 6. Return if game over and the score
+        # Return if game over and the score
         return reward, game_over, self.score
 
     def is_collision(self, pt=None):
@@ -142,14 +149,14 @@ class SnakeGameAI:
         clockwise = [Direction.RIGHT, Direction.DOWN, Direction.LEFT, Direction.UP]
         idx = clockwise.index(self.direction)
 
-        if(np.array_equals(action, [1,0,0])):
-            new_direction = clockwise[idx] # no change to the direction
-        elif(np.array_equals(action, [0,1,0])):
+        if(np.array_equal(action, [1,0,0])):
+            new_dir = clockwise[idx] # no change to the direction
+        elif(np.array_equal(action, [0,1,0])):
             next_index = (idx + 1) % 4 # make a right turn
-            new_dir = clock_wise[next_index]
+            new_dir = clockwise[next_index]
         else:
             next_index = (idx - 1) % 4 # make a left turn
-            new_dir = clock_wise[next_index]
+            new_dir = clockwise[next_index]
 
         self.direction = new_dir
 
