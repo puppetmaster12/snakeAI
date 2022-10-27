@@ -20,3 +20,7 @@
   <li>Improve the AI to reach the food more efficiently.</li>
   <li>Experiment with other algorithms.</li>
 </ul>
+
+<h3>Changelog</h3>
+<p><b>27/10/2022</b></p>
+<p>Added a penalty for 100 moves without food and terminated the frame for 200 moves without food</p>
