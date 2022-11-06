@@ -95,12 +95,12 @@ class SnakeGameAI:
 
         # Place the new food
         if self.head == self.food:
-            self.no_food = 0
             self.score += 1
             if self.no_food < 100:
                 reward = 10
             else:
                 reward = 5
+            self.no_food = 0
             
             self._place_food()
         else:
